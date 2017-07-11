@@ -1,0 +1,67 @@
+name: malachite
+version: 0.1.0
+synopsis: An image scraper service
+description: See README at <https://github.com/fanuniverse/malachite#readme>
+maintainer: little-bobby-tables <whitediamond@fanuniverse.org>
+license: OtherLicense
+github: fanuniverse/malachite
+category: Web
+
+default-extensions:
+  - OverloadedStrings
+
+ghc-options: -Wall -O2
+
+dependencies:
+  - base >= 4.7 && < 5
+  - mtl
+  - transformers
+  - exceptions
+  - bytestring
+  - blaze-builder
+  - conduit
+  - http-conduit
+  - http-client
+  - http-client-tls
+  - http-types
+  - tagsoup
+  - fast-tagsoup
+  - regex-pcre
+  - warp
+  - wai
+  - aeson
+  - hex
+  - cryptonite
+
+library:
+  source-dirs: src
+  exposed-modules:
+    - Server
+    - Scraper
+    - Scraper.Interface
+    - Scraper.Deviantart
+    - Scraper.Tumblr
+    - Scraper.Internal
+    - Scraper.Internal.DOM
+    - Scraper.Internal.HTTP
+    - Scraper.Internal.MonadHTTP
+
+executables:
+  malachite:
+    main: Main.hs
+    source-dirs: exec
+    dependencies:
+      - malachite
+
+tests:
+  spec:
+    main: Spec.hs
+    source-dirs:
+      - test
+      - src
+    dependencies:
+      - hspec
+      - hspec-wai
+      - hspec-wai-json
+      - directory
+      - binary
