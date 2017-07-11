@@ -1,3 +1,5 @@
+{-# LANGUAGE ScopedTypeVariables #-}
+
 module Scraper.Deviantart (fromPost, fromCDN) where
 
 import Scraper
@@ -31,16 +33,18 @@ fromPost url = do
                         , artist = Just $ toString sArtist
                         , pageUrl = Just $ toString sPageUrl }
 
+fromCDN :: (MonadHTTP m) => String -> m (Maybe Scraped)
+fromCDN cdnUrl =
+  case favMeUrl of
+    Just url -> fromPost =<< redirectedFrom url
+    Nothing -> return Nothing
+  where
+    favMeUrl = ("http://fav.me/" ++) <$> favMeCode
+    favMeCode =
+      case cdnUrl =~ ("-(.+)\\..+\\z" :: String) of
+        [[_, code]] -> Just code
+        _ -> Nothing
+
 followDownloadLink :: (MonadHTTP m) => BString -> [Cookie] -> m BString
 followDownloadLink link cookies =
   bString <$> redirectedFromWithCookies (toString link) cookies
-
-fromCDN :: (MonadHTTP m) => String -> m (Maybe Scraped)
-fromCDN url = do
-  let idMatch = url =~ ("-(.+)\\..+\\z" :: String) :: [[String]]
-      favMeCode = case length idMatch of
-                    1 -> Just (last . head $ idMatch)
-                    _ -> Nothing
-  case favMeCode of
-    Just code -> redirectedFrom ("http://fav.me/" ++ code) >>= fromPost
-    Nothing -> return Nothing

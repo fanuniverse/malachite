@@ -11,7 +11,7 @@ import Crypto.Hash.Algorithms
 
 camo :: String -> String -> String -> String
 camo host key url =
-  let digest = show $ hmacGetDigest ((hmac (bString key) (bString url)) :: HMAC SHA1)
+  let digest = show $ hmacGetDigest (hmac (bString key) (bString url) :: HMAC SHA1)
       encodedUrl = map toLower (hex url)
   in host ++ "/" ++ digest ++ "/" ++ encodedUrl
 

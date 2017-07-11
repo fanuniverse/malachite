@@ -31,7 +31,7 @@ app :: ServerConfiguration -> Application
 app config request respond = respond =<<
   let requestedUrl = join $ lookup "url" $ queryString request
   in case requestedUrl of
-    Just url -> return . (respondWithScraped config) =<< scrape (toString url)
+    Just url -> (respondWithScraped config) <$> (scrape (toString url))
     Nothing -> return respondWith400
 
 respondWithScraped :: ServerConfiguration -> Maybe Scraped -> Response

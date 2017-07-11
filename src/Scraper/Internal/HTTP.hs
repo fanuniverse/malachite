@@ -21,7 +21,7 @@ urlScheme :: String -> String
 urlScheme url = url =~ ("\\A(.+)://" :: String)
 
 httpUrl :: String -> Maybe String
-httpUrl url = if (all isSpace url)
+httpUrl url = if all isSpace url
   then Nothing
   else case urlScheme url of
          "https://" -> Just url
@@ -53,7 +53,7 @@ fetchPage url withCookies = do
   let cookies = (destroyCookieJar . responseCookieJar) response
       body = (L.toStrict . responseBody) response
   return (cookies, body)
-  where request = (\r -> r { method = "GET" })
+  where request r = r { method = "GET" }
 
 redirectedFrom :: (MonadHTTP m) => String -> m String
 redirectedFrom = flip redirectedFromWithCookies []
@@ -63,9 +63,9 @@ redirectedFromWithCookies url cookies = do
   response <- fetch request url [] cookies
   let headers = responseHeaders response
       location = find ((== "location") . fst) headers
-      newUrl  = case location of
+      newUrl = case location of
         Just (_, loc) -> toString loc
         Nothing -> url
   return newUrl
-  where request = \r -> r { method = "HEAD"
-                          , redirectCount = 0 }
+  where request r = r { method = "HEAD"
+                      , redirectCount = 0 }
