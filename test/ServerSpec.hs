@@ -31,7 +31,7 @@ spec = with testApp $ do
                      artist: null,
                      pageUrl: null } |]
             { matchStatus = 200
-            , matchHeaders = ["Content-Type" <:> "application/json"] }
+            , matchHeaders = ["Content-Type" <:> "application/json;charset=utf-8"] }
 
     context "(unsupported or invalid url)" $ do
       it "responds with Not Found" $ do

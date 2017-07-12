@@ -24,8 +24,9 @@ data ServerConfiguration = ServerConfiguration
 
 runServer :: ServerConfiguration -> IO ()
 runServer config = run serverPort application
-  where serverPort = port config
-        application = app config
+  where
+    serverPort = port config
+    application = app config
 
 app :: ServerConfiguration -> Application
 app config request respond = respond =<<
@@ -36,9 +37,11 @@ app config request respond = respond =<<
 
 respondWithScraped :: ServerConfiguration -> Maybe Scraped -> Response
 respondWithScraped config = \case
-  Just scraped -> responseLBS ok200 [(hContentType, "application/json")] json
-    where json = (encode . camoify) scraped
-          camoify = camoifyScraped (camoHost config) (camoKey config)
+  Just scraped -> responseLBS ok200
+    [(hContentType, "application/json;charset=utf-8")] json
+      where
+        json = (encode . camoify) scraped
+        camoify = camoifyScraped (camoHost config) (camoKey config)
   Nothing -> responseLBS notFound404 [] ""
 
 respondWith400 :: Response
