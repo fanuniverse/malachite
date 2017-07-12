@@ -18,19 +18,19 @@ The service can respond with either of the following:
 
 ## Docker
 
-A sample Dockerfile is provided. The size of the final image is, however, rather excessive, and a rewrite is planned.
+Pull from [littlebobbytables/malachite](https://hub.docker.com/r/littlebobbytables/malachite/).
 
 ## Development
 
 ### Requirements
 
+* Docker
 * [stack](https://github.com/commercialhaskell/stack)
-* `libicu-devel` (fast-tagsoup)
 
 ### Building
 
 ```
-stack setup # install GHC
+stack docker pull
 stack build
 ```
 
