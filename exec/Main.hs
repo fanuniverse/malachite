@@ -2,6 +2,7 @@ module Main where
 
 import Server (ServerConfiguration(..), runServer)
 
+import qualified Data.Text as Text
 import System.Environment (getEnv)
 
 main :: IO ()
@@ -10,6 +11,6 @@ main = do
   envCamoKey <- getEnv "CAMO_KEY"
   envPort <- getEnv "PORT"
   runServer $ ServerConfiguration
-    { camoHost = envCamoHost
-    , camoKey = envCamoKey
+    { camoHost = Text.pack $ envCamoHost
+    , camoKey = Text.pack $ envCamoKey
     , port = read envPort }

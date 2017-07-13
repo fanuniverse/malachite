@@ -2,7 +2,6 @@
 
 module HTTPCassette (HTTPCassette, playCassette) where
 
-import Strings (bString)
 import Scraper.Internal.MonadHTTP
 
 import Crypto.Hash (Digest, SHA1, hash)
@@ -10,6 +9,7 @@ import Data.Binary (Binary, get, put, encode, decode)
 
 import System.Directory (getCurrentDirectory, doesFileExist)
 
+import Data.ByteString.UTF8 (fromString)
 import qualified Data.ByteString.Lazy as L
 
 import Control.Monad.Catch (MonadThrow)
@@ -32,13 +32,13 @@ play request = HTTPCassette $ do
   doesFileExist fixture >>= \t -> if t
     then replay fixture
     else runAndRecord request fixture
-  where sha1 s = show (hash (bString s) :: Digest SHA1)
+  where sha1 s = show (hash (fromString s) :: Digest SHA1)
         hashId = sha1 . show
         fixtureDir = (++ "/test/fixtures") <$> getCurrentDirectory
         fixtureFile = (++ "/" ++ hashId request) <$> fixtureDir
 
 replay :: FilePath -> IO LResponse
-replay fixture = L.readFile fixture >>= return . decode
+replay = (decode <$>) . L.readFile
 
 runAndRecord :: Request -> FilePath -> IO LResponse
 runAndRecord request fixture = do

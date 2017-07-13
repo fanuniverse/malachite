@@ -30,6 +30,8 @@ library
     , transformers
     , exceptions
     , bytestring
+    , utf8-string
+    , text
     , blaze-builder
     , conduit
     , http-conduit
@@ -56,7 +58,6 @@ library
       Scraper.Internal.MonadHTTP
   other-modules:
       Camo
-      Strings
       Paths_malachite
   default-language: Haskell2010
 
@@ -72,6 +73,8 @@ executable malachite
     , transformers
     , exceptions
     , bytestring
+    , utf8-string
+    , text
     , blaze-builder
     , conduit
     , http-conduit
@@ -103,6 +106,8 @@ test-suite spec
     , transformers
     , exceptions
     , bytestring
+    , utf8-string
+    , text
     , blaze-builder
     , conduit
     , http-conduit
@@ -138,5 +143,4 @@ test-suite spec
       Scraper.Internal.MonadHTTP
       Scraper.Tumblr
       Server
-      Strings
   default-language: Haskell2010

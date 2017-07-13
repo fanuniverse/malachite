@@ -5,20 +5,18 @@ module Scraper.Deviantart (fromPost, fromCDN) where
 import Scraper
 import Scraper.Internal
 
-import Strings (BString, toString)
-
-import Text.Regex.PCRE ((=~))
-
 import Network.HTTP.Conduit (Cookie)
 
-import Text.HTML.TagSoup.Fast (parseTags)
+import Text.Regex.PCRE ((=~))
 import Text.HTML.TagSoup (isTagOpenName, fromAttrib)
 
-import Control.Arrow (second)
+import Data.Text (Text)
 import Data.List (find)
 
+import qualified Data.Text as Text
+
 fromPost :: (MonadHTTP m) => String -> m (Maybe Scraped)
-fromPost url = go =<< (second parseTags <$> fetchPage url [])
+fromPost url = go =<< fetchPage url []
   where
     go (cookies, page) = do
       sImageUrl <- case downloadUrl of
@@ -31,13 +29,13 @@ fromPost url = go =<< (second parseTags <$> fetchPage url [])
       where
         downloadUrl = (fromAttrib "href") <$>
           find (hasClass "dev-page-download") pageLinks
-        imagePreviewUrl = toString $ firstAttr "src"
+        imagePreviewUrl = firstAttr "src"
           (hasClass "dev-content-full" <@ page)
-        sThumbnailUrl = toString $ firstAttr "src"
+        sThumbnailUrl = firstAttr "src"
           (hasClass "dev-content-normal" <@ page)
-        sArtist = toString $ firstText
+        sArtist = firstText
           (hasClass "username" <@ hasClass "dev-title-container" <@ page)
-        sCanonicalUrl = toString $ firstAttr "content"
+        sCanonicalUrl = firstAttr "content"
           (hasAttr "property" "og:url" <@ page)
         pageLinks = filter (isTagOpenName "a") page
 
@@ -49,6 +47,6 @@ fromCDN cdnUrl =
     _ ->
       return Nothing
 
-followUrl :: (MonadHTTP m) => BString -> [Cookie] -> m String
-followUrl url cookies =
-  redirectedFromWithCookies (toString url) cookies
+followUrl :: (MonadHTTP m) => Text -> [Cookie] -> m Text
+followUrl url cookies = Text.pack <$>
+  redirectedFromWithCookies (Text.unpack url) cookies

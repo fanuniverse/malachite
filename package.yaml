@@ -18,6 +18,8 @@ dependencies:
   - transformers
   - exceptions
   - bytestring
+  - utf8-string
+  - text
   - blaze-builder
   - conduit
   - http-conduit

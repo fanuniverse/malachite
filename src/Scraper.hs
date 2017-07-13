@@ -5,11 +5,13 @@ module Scraper where
 import GHC.Generics
 import Data.Aeson
 
+import Data.Text (Text)
+
 data Scraped = Scraped
-  { imageUrl     :: String
-  , thumbnailUrl :: String
-  , artist       :: Maybe String
-  , pageUrl      :: Maybe String }
+  { imageUrl     :: Text
+  , thumbnailUrl :: Text
+  , artist       :: Maybe Text
+  , pageUrl      :: Maybe Text }
   deriving (Generic, Show, Eq)
 
 instance ToJSON Scraped where

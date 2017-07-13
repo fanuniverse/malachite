@@ -3,18 +3,20 @@ module Scraper.Internal.HTTP ( httpUrl
                              , redirectedFrom
                              , redirectedFromWithCookies) where
 
-import Strings (BString, toString)
-
 import Scraper.Internal.MonadHTTP (MonadHTTP, LResponse, httpLResponse)
 
 import Data.List (find)
 import Data.Char (isSpace)
+import Data.Text (Text)
 
 import Text.Regex.PCRE ((=~))
+import Text.HTML.TagSoup (Tag)
+import Text.HTML.TagSoup.Fast (parseTagsT)
 
 import Network.HTTP.Conduit
 import Network.HTTP.Types.Header (Header)
 
+import Data.ByteString.UTF8 (toString)
 import qualified Data.ByteString.Lazy as L
 
 urlScheme :: String -> String
@@ -46,14 +48,15 @@ fetch fmod url headers cookies = do
   httpLResponse request
 
 -- Higher-level HTTP GET function.
--- URL -> cookies
-fetchPage :: (MonadHTTP m) => String -> [Cookie] -> m ([Cookie], BString)
-fetchPage url withCookies = do
-  response <- fetch request url [] withCookies
-  let cookies = (destroyCookieJar . responseCookieJar) response
-      body = (L.toStrict . responseBody) response
-  return (cookies, body)
-  where request r = r { method = "GET" }
+-- URL -> cookies -> a tuple of (cookies, parsed web page)
+fetchPage :: (MonadHTTP m) => String -> [Cookie] -> m ([Cookie], [Tag Text])
+fetchPage url reqCookies = go <$> fetch request url [] reqCookies
+  where
+    request r = r { method = "GET" }
+    go response = (cookies, page)
+      where
+        cookies = (destroyCookieJar . responseCookieJar) response
+        page = (parseTagsT . L.toStrict . responseBody) response
 
 redirectedFrom :: (MonadHTTP m) => String -> m String
 redirectedFrom = flip redirectedFromWithCookies []

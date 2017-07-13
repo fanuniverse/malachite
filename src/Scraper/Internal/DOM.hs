@@ -4,7 +4,7 @@ module Scraper.Internal.DOM ( (<@)
                             , firstText
                             , firstAttr) where
 
-import Strings (BString, bIsInfixOf)
+import Data.Text (Text, isInfixOf)
 
 import Text.HTML.TagSoup (Tag, isTagOpen, isTagText, fromAttrib, fromTagText)
 
@@ -12,16 +12,16 @@ infixr 5 <@
 (<@) :: (a -> Bool) -> [a] -> [a]
 f <@ xs = dropWhile (not . f) xs
 
-hasAttr :: BString -> BString -> Tag BString -> Bool
+hasAttr :: Text -> Text -> Tag Text -> Bool
 hasAttr attr content tag
-  | isTagOpen tag = content `bIsInfixOf` (fromAttrib attr tag)
+  | isTagOpen tag = content `isInfixOf` (fromAttrib attr tag)
   | otherwise     = False
 
-hasClass :: BString -> Tag BString -> Bool
+hasClass :: Text -> Tag Text -> Bool
 hasClass = hasAttr "class"
 
-firstText :: [Tag BString] -> BString
-firstText ts = fromTagText $ head $ isTagText <@ ts
+firstText :: [Tag Text] -> Text
+firstText ts = fromTagText (head (isTagText <@ ts))
 
-firstAttr :: BString -> [Tag BString] -> BString
+firstAttr :: Text -> [Tag Text] -> Text
 firstAttr attr ts = fromAttrib attr (head ts)

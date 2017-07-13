@@ -1,11 +1,12 @@
 module Scraper.Interface (scrape) where
 
 import Text.Regex.PCRE ((=~))
+import qualified Data.Text as Text
 
 import Scraper
 import Scraper.Internal (MonadHTTP, redirectedFrom, httpUrl)
-import qualified Scraper.Deviantart as DA
-import qualified Scraper.Tumblr as T
+import qualified Scraper.Deviantart as DeviantArt
+import qualified Scraper.Tumblr as Tumblr
 
 scrape :: (MonadHTTP m) => String -> m (Maybe Scraped)
 scrape url = case httpUrl url of
@@ -15,17 +16,17 @@ scrape url = case httpUrl url of
 scrapeUrl :: (MonadHTTP m) => String -> m (Maybe Scraped)
 scrapeUrl url
   | url =~ ("\\Ahttps?://.+\\.deviantart\\.com/.+"          :: String)
-    = DA.fromPost url
+    = DeviantArt.fromPost url
   | url =~ ("\\Ahttps?://(www.)?fav\\.me/.+"                :: String)
-    = redirectedFrom url >>= DA.fromPost
+    = DeviantArt.fromPost =<< redirectedFrom url
   | url =~ ("\\Ahttps?://.+\\.deviantart\\.net/.+d.+"       :: String)
-    = DA.fromCDN url
+    = DeviantArt.fromCDN url
   | url =~ ("\\Ahttps?://.+\\.tumblr\\.com/(post|image)/.+" :: String)
-    = T.fromPost url
+    = Tumblr.fromPost url
   | url =~ ("\\Ahttps?://.*\\.(jpg|jpeg|png|gif|svg)"       :: String)
     = return $ Just Scraped
-      { imageUrl = url
-      , thumbnailUrl = url
+      { imageUrl = Text.pack url
+      , thumbnailUrl = Text.pack url
       , artist = Nothing
       , pageUrl = Nothing }
   | otherwise

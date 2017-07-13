@@ -4,12 +4,13 @@ module Server (ServerConfiguration(..), runServer, app) where
 
 import Scraper (Scraped)
 import Scraper.Interface (scrape)
-import Strings (toString)
 import Camo (camoifyScraped)
 
 import Control.Monad (join)
 
 import Data.Aeson (encode)
+import Data.Text (Text)
+import Data.ByteString.UTF8 (toString)
 
 import Network.Wai (Application, Response, queryString, responseLBS)
 import Network.Wai.Handler.Warp (Port, run)
@@ -17,8 +18,8 @@ import Network.HTTP.Types (ok200, badRequest400, notFound404)
 import Network.HTTP.Types.Header (hContentType)
 
 data ServerConfiguration = ServerConfiguration
-  { camoHost :: String
-  , camoKey  :: String
+  { camoHost :: Text
+  , camoKey  :: Text
   , port     :: Port }
   deriving (Show, Eq)
 
