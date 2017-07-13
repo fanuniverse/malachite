@@ -1,5 +1,6 @@
 module Scraper.Internal.HTTP ( httpUrl
                              , fetchPage
+                             , reqStatus
                              , redirectedFrom
                              , redirectedFromWithCookies) where
 
@@ -15,6 +16,7 @@ import Text.HTML.TagSoup.Fast (parseTagsT)
 
 import Network.HTTP.Conduit
 import Network.HTTP.Types.Header (Header)
+import Network.HTTP.Types.Status (statusCode)
 
 import Data.ByteString.UTF8 (toString)
 import qualified Data.ByteString.Lazy as L
@@ -57,6 +59,12 @@ fetchPage url reqCookies = go <$> fetch request url [] reqCookies
       where
         cookies = (destroyCookieJar . responseCookieJar) response
         page = (parseTagsT . L.toStrict . responseBody) response
+
+reqStatus :: (MonadHTTP m) => String -> m Int
+reqStatus url = getStatus <$> fetch request url [] []
+  where
+    getStatus = statusCode . responseStatus
+    request r = r { method = "HEAD" }
 
 redirectedFrom :: (MonadHTTP m) => String -> m String
 redirectedFrom = flip redirectedFromWithCookies []
