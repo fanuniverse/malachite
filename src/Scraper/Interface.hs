@@ -16,13 +16,13 @@ scrape url = case httpUrl url of
 scrapeUrl :: (MonadHTTP m) => String -> m (Maybe Scraped)
 scrapeUrl url
   | url =~ ("\\Ahttps?://.+\\.deviantart\\.com/.+"          :: String)
-    = DeviantArt.fromPost url
+    = DeviantArt.scrapePost url
   | url =~ ("\\Ahttps?://(www.)?fav\\.me/.+"                :: String)
-    = DeviantArt.fromPost =<< redirectedFrom url
+    = DeviantArt.scrapePost =<< redirectedFrom url
   | url =~ ("\\Ahttps?://.+\\.deviantart\\.net/.+d.+"       :: String)
-    = DeviantArt.fromCDN url
+    = DeviantArt.scrapeCDN url
   | url =~ ("\\Ahttps?://.+\\.tumblr\\.com/(post|image)/.+" :: String)
-    = Tumblr.fromPost url
+    = Tumblr.scrapePost url
   | url =~ ("\\Ahttps?://.*\\.(jpg|jpeg|png|gif|svg)"       :: String)
     = return $ Just Scraped
       { imageUrl = Text.pack url

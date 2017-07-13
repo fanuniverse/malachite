@@ -1,6 +1,6 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 
-module Scraper.Deviantart (fromPost, fromCDN) where
+module Scraper.Deviantart (scrapePost, scrapeCDN) where
 
 import Scraper
 import Scraper.Internal
@@ -15,8 +15,8 @@ import Data.List (find)
 
 import qualified Data.Text as Text
 
-fromPost :: (MonadHTTP m) => String -> m (Maybe Scraped)
-fromPost url = go =<< fetchPage url []
+scrapePost :: (MonadHTTP m) => String -> m (Maybe Scraped)
+scrapePost url = go =<< fetchPage url []
   where
     go (cookies, page) = do
       sImageUrl <- case downloadUrl of
@@ -39,11 +39,11 @@ fromPost url = go =<< fetchPage url []
           (hasAttr "property" "og:url" <@ page)
         pageLinks = filter (isTagOpenName "a") page
 
-fromCDN :: (MonadHTTP m) => String -> m (Maybe Scraped)
-fromCDN cdnUrl =
+scrapeCDN :: (MonadHTTP m) => String -> m (Maybe Scraped)
+scrapeCDN cdnUrl =
   case cdnUrl =~ ("-(.+)\\..+\\z" :: String) of
     [[_, favMeCode]] ->
-      fromPost =<< redirectedFrom ("http://fav.me/" ++ favMeCode)
+      scrapePost =<< redirectedFrom ("http://fav.me/" ++ favMeCode)
     _ ->
       return Nothing
 

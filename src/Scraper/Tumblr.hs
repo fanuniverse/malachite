@@ -1,4 +1,4 @@
-module Scraper.Tumblr (fromPost) where
+module Scraper.Tumblr (scrapePost) where
 
 import Scraper
 import Scraper.Internal
@@ -7,8 +7,8 @@ import Text.Regex.PCRE ((=~))
 
 import Text.HTML.TagSoup (isTagOpenName)
 
-fromPost :: (MonadHTTP m) => String -> m (Maybe Scraped)
-fromPost url = go =<< (snd <$> fetchPage apiUrl [])
+scrapePost :: (MonadHTTP m) => String -> m (Maybe Scraped)
+scrapePost url = go =<< (snd <$> fetchPage apiUrl [])
   where
     apiUrl = blog ++ "/api/read?id=" ++ postId
     [[_, blog, postId]] = url =~ postRegex
