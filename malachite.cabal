@@ -3,7 +3,7 @@
 -- see: https://github.com/sol/hpack
 
 name:           malachite
-version:        0.1.0
+version:        0.2.0
 synopsis:       An image scraper service
 description:    See README at <https://github.com/fanuniverse/malachite#readme>
 category:       Web
