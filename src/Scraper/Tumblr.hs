@@ -39,7 +39,7 @@ largestImgUrl scaledUrl = do
     [[_, path, ext]] = (Text.unpack scaledUrl) =~ cdnPathRegex
 
 postRegex :: String
-postRegex = "\\A(https?://.+\\.tumblr\\.com)/(?:post|image)/(\\d+)"
+postRegex = "\\A(https?://.+)/(?:post|image)/(\\d+)"
 
 cdnPathRegex :: String
 cdnPathRegex = ".+tumblr[.]com/(.+)_\\d+[.](.+)\\z"

@@ -43,3 +43,11 @@ spec = do
           , thumbnailUrl = "https://68.media.tumblr.com/tumblr_l5nv2u80Br1qz8q0ho1_500.png"
           , artist = Just "staff"
           , pageUrl = Just "https://staff.tumblr.com/post/820098218/norad" }
+
+    it "handles custom domain links" $ (playCassette . scrape)
+      "http://www.mslovejoy.com/post/160715266946" >>= \scraped ->
+        scraped `shouldBe` Just Scraped
+          { imageUrl = "http://media.tumblr.com/cf7a11ec13f644b1168df0c6687f8d59/tumblr_oq0r1btk7p1rsezm9o1_raw.jpg"
+          , thumbnailUrl = "http://68.media.tumblr.com/cf7a11ec13f644b1168df0c6687f8d59/tumblr_oq0r1btk7p1rsezm9o1_500.jpg"
+          , artist = Just "mslovejoy"
+          , pageUrl = Just "http://www.mslovejoy.com/post/160715266946" }

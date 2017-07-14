@@ -23,6 +23,14 @@ scrapeUrl url
     = DeviantArt.scrapeCDN url
   | url =~ ("\\Ahttps?://.+\\.tumblr\\.com/(post|image)/.+" :: String)
     = Tumblr.scrapePost url
+  -- The clause below detects a custom Tumblr domain. If it turns out
+  -- there are other sites with a similar URL structure, they can be
+  -- matched using Alternative (<|>), but the Tumblr scraper would need
+  -- to be changed first to return Nothing for a non-200 API response.
+  | url =~ ("\\Ahttps?://.+/(post|image)/.+"                :: String)
+    = Tumblr.scrapePost url
+  -- If a URL ends with an image extension, we may as well assume it
+  -- points to an image and return it instead of Nothing.
   | url =~ ("\\Ahttps?://.*\\.(jpg|jpeg|png|gif|svg)"       :: String)
     = return $ Just Scraped
       { imageUrl = Text.pack url
