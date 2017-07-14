@@ -7,6 +7,7 @@ import Scraper
 import Scraper.Internal (MonadHTTP, redirectedFrom, httpUrl)
 import qualified Scraper.Deviantart as DeviantArt
 import qualified Scraper.Tumblr as Tumblr
+import qualified Scraper.Twitter as Twitter
 
 scrape :: (MonadHTTP m) => String -> m (Maybe Scraped)
 scrape url = case httpUrl url of
@@ -15,23 +16,25 @@ scrape url = case httpUrl url of
 
 scrapeUrl :: (MonadHTTP m) => String -> m (Maybe Scraped)
 scrapeUrl url
-  | url =~ ("\\Ahttps?://.+\\.deviantart\\.com/.+"          :: String)
+  | url =~ ("\\Ahttps?://.+\\.deviantart\\.com/.+"           :: String)
     = DeviantArt.scrapePost url
-  | url =~ ("\\Ahttps?://(www.)?fav\\.me/.+"                :: String)
+  | url =~ ("\\Ahttps?://(www.)?fav\\.me/.+"                 :: String)
     = DeviantArt.scrapePost =<< redirectedFrom url
-  | url =~ ("\\Ahttps?://.+\\.deviantart\\.net/.+d.+"       :: String)
+  | url =~ ("\\Ahttps?://.+\\.deviantart\\.net/.+d.+"        :: String)
     = DeviantArt.scrapeCDN url
-  | url =~ ("\\Ahttps?://.+\\.tumblr\\.com/(post|image)/.+" :: String)
+  | url =~ ("\\Ahttps?://.+\\.tumblr\\.com/(post|image)/.+"  :: String)
     = Tumblr.scrapePost url
+  | url =~ ("\\Ahttps?://(.+\\.)?twitter\\.com/.+/status/.+" :: String)
+    = Twitter.scrapeStatus url
   -- The clause below detects a custom Tumblr domain. If it turns out
   -- there are other sites with a similar URL structure, they can be
   -- matched using Alternative (<|>), but the Tumblr scraper would need
   -- to be changed first to return Nothing for a non-200 API response.
-  | url =~ ("\\Ahttps?://.+/(post|image)/.+"                :: String)
+  | url =~ ("\\Ahttps?://.+/(post|image)/.+"                 :: String)
     = Tumblr.scrapePost url
   -- If a URL ends with an image extension, we may as well assume it
   -- points to an image and return it instead of Nothing.
-  | url =~ ("\\Ahttps?://.*\\.(jpg|jpeg|png|gif|svg)"       :: String)
+  | url =~ ("\\Ahttps?://.*\\.(jpg|jpeg|png|gif|svg)"        :: String)
     = return $ Just Scraped
       { imageUrl = Text.pack url
       , thumbnailUrl = Text.pack url

@@ -3,7 +3,6 @@ module Scraper.Tumblr (scrapePost) where
 import Scraper
 import Scraper.Internal
 
-import Text.Regex.PCRE ((=~))
 import Text.HTML.TagSoup (isTagOpenName)
 import Data.Text (Text)
 import qualified Data.Text as Text

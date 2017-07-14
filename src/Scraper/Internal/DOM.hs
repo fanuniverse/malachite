@@ -2,7 +2,8 @@ module Scraper.Internal.DOM ( (<@)
                             , hasAttr
                             , hasClass
                             , firstText
-                            , firstAttr) where
+                            , firstAttr
+                            , firstMetaContent) where
 
 import Data.Text (Text, isInfixOf)
 
@@ -25,3 +26,7 @@ firstText ts = fromTagText (head (isTagText <@ ts))
 
 firstAttr :: Text -> [Tag Text] -> Text
 firstAttr attr ts = fromAttrib attr (head ts)
+
+firstMetaContent :: Text -> [Tag Text] -> Text
+firstMetaContent prop ts =
+  firstAttr "content" (hasAttr "property" prop <@ ts)
