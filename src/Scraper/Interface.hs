@@ -1,13 +1,12 @@
 module Scraper.Interface (scrape) where
 
-import Text.Regex.PCRE ((=~))
-import qualified Data.Text as Text
-
 import Scraper
-import Scraper.Internal (MonadHTTP, redirectedFrom, httpUrl)
+import Scraper.Internal (MonadHTTP, redirectedFrom, httpUrl, (=~))
 import qualified Scraper.Deviantart as DeviantArt
 import qualified Scraper.Tumblr as Tumblr
 import qualified Scraper.Twitter as Twitter
+
+import qualified Data.Text as Text
 
 scrape :: (MonadHTTP m) => String -> m (Maybe Scraped)
 scrape url = case httpUrl url of

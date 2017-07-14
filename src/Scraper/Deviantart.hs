@@ -5,14 +5,10 @@ module Scraper.Deviantart (scrapePost, scrapeCDN) where
 import Scraper
 import Scraper.Internal
 
-import Network.HTTP.Conduit (Cookie)
-
-import Text.Regex.PCRE ((=~))
-import Text.HTML.TagSoup (isTagOpenName, fromAttrib)
-
 import Data.Text (Text)
 import Data.List (find)
-
+import Network.HTTP.Conduit (Cookie)
+import Text.HTML.TagSoup (isTagOpenName, fromAttrib)
 import qualified Data.Text as Text
 
 scrapePost :: (MonadHTTP m) => String -> m (Maybe Scraped)
@@ -27,7 +23,7 @@ scrapePost url = go =<< fetchPage url []
                             , artist = Just sArtist
                             , pageUrl = Just sCanonicalUrl }
       where
-        downloadUrl = (fromAttrib "href") <$>
+        downloadUrl = fromAttrib "href" <$>
           find (hasClass "dev-page-download") pageLinks
         imagePreviewUrl = firstAttr "src"
           (hasClass "dev-content-full" <@ page)
@@ -35,8 +31,7 @@ scrapePost url = go =<< fetchPage url []
           (hasClass "dev-content-normal" <@ page)
         sArtist = firstText
           (hasClass "username" <@ hasClass "dev-title-container" <@ page)
-        sCanonicalUrl = firstAttr "content"
-          (hasAttr "property" "og:url" <@ page)
+        sCanonicalUrl = firstMetaContent "og:url" page
         pageLinks = filter (isTagOpenName "a") page
 
 scrapeCDN :: (MonadHTTP m) => String -> m (Maybe Scraped)
